@@ -90,8 +90,7 @@
             color: #333;
         }
     </style>
-</head>
-<body>
+</head><body>
     <div class="card-container">
         <div class="card">
             <div class="card-front">
@@ -100,7 +99,8 @@
             </div>
             <div class="card-inner">
                 <div class="video-container">
-                    <video class="birthday-video" controls autoplay muted>
+                    <!-- Removed 'muted' attribute and added 'playsinline' -->
+                    <video class="birthday-video" controls autoplay playsinline>
                         <source src="birthday.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
@@ -117,17 +117,33 @@
         const card = document.querySelector('.card');
         const video = document.querySelector('.birthday-video');
 
+        // Ensure video is unmuted when play starts
+        video.muted = false;
+
         card.addEventListener('click', function() {
             this.classList.toggle('open');
             if (this.classList.contains('open')) {
-                video.play().catch(error => {
-                    // Handle autoplay restrictions
-                    console.log('Video play failed:', error);
-                });
+                video.play()
+                    .then(() => {
+                        video.muted = false; // Ensure unmuted
+                    })
+                    .catch(error => {
+                        console.log('Video play failed:', error);
+                        // Handle browsers that require interaction first
+                        alert('Please click anywhere first to allow audio!');
+                    });
             } else {
                 video.pause();
             }
         });
+
+        // Add a initial click handler to enable audio
+        document.body.addEventListener('click', function initialClick() {
+            // Create and remove a dummy audio element to activate audio context
+            const dummyAudio = new Audio();
+            dummyAudio.play().then(() => dummyAudio.remove());
+            document.body.removeEventListener('click', initialClick);
+        }, { once: true });
     </script>
 </body>
 </html>
