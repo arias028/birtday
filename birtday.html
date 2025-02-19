@@ -5,136 +5,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Birthday Card</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #f8ebe5;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
         }
 
         .card-container {
-            position: relative;
-            width: 300px;
-            height: 200px;
             perspective: 1000px;
-            transform-style: preserve-3d;
-            cursor: pointer;
         }
 
         .card {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.8s;
+            width: 300px;
+            height: 400px;
+            position: relative;
             transform-style: preserve-3d;
-            border-radius: 15px;
+            transition: transform 1s;
+            cursor: pointer;
         }
 
-        .front,
-        .back {
+        .card.open {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-inner {
             position: absolute;
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
             border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .card-front {
+            background: #e63946;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-        }
-
-        /* Front side */
-        .front {
-            background-color: #ffffff;
-            background-image: url('https://example.com/party-confetti.jpg');
-            background-size: cover;
-            background-position: center;
-            box-shadow: 2px 5px 15px rgba(0,0,0,0.15);
-        }
-
-        .front h1 {
-            color: #ffffff;
-            text-shadow: 1px 3px 5px rgba(0,0,0,0.3);
-            font-family: 'Cursive', 'Arial', sans-serif;
-            font-size: 2rem;
             padding: 20px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 10px;
+            transform: rotateY(0deg);
         }
 
-        /* Back side (video container) */
-        .back {
+        .card-front h1 {
+            color: white;
+            font-size: 2em;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card-front p {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .card-inner {
+            background: white;
             transform: rotateY(180deg);
-            background-color: #f5f5f5;
+            padding: 20px;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
         }
 
         .video-container {
-            position: relative;
-            width: 90%;
-            height: 80%;
-            background: #1b1b1b;
+            flex-grow: 1;
+            overflow: hidden;
             border-radius: 10px;
         }
 
-        .video-container video {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .birthday-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        /* Opened state */
-        .opened .card {
-            transform: rotateY(180deg);
-        }
-
-        /* Media query for responsiveness */
-        @media (max-width: 600px) {
-            .card-container {
-                width: 200px;
-                height: 150px;
-            }
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <div class="card-container" onclick="openCard()">
+    <div class="card-container">
         <div class="card">
-            <!-- Front side -->
-            <div class="front">
-                <h1>Surprise!</h1>
+            <div class="card-front">
+                <h1>Happy Birthday! 🎉</h1>
+                <p>Tap to open your card!</p>
             </div>
-            <!-- Back side (video container) -->
-            <div class="back">
+            <div class="card-inner">
                 <div class="video-container">
-                    <video id="birthdayVideo" playsinline muted>
+                    <video class="birthday-video" controls autoplay muted>
                         <source src="birthday.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
+                </div>
+                <div class="message">
+                    <h2>Wishing You An Amazing Day! 🎂</h2>
+                    <p>May all your dreams come true!</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const cardContainer = document.querySelector('.card-container');
-        const video = document.getElementById('birthdayVideo');
+        const card = document.querySelector('.card');
+        const video = document.querySelector('.birthday-video');
 
-        function openCard() {
-            cardContainer.classList.add('opened');
-            video.play();
-        }
+        card.addEventListener('click', function() {
+            this.classList.toggle('open');
+            if (this.classList.contains('open')) {
+                video.play().catch(error => {
+                    // Handle autoplay restrictions
+                    console.log('Video play failed:', error);
+                });
+            } else {
+                video.pause();
+            }
+        });
     </script>
 </body>
 </html>
